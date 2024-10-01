@@ -1,9 +1,8 @@
+/* eslint-disable functional/no-expression-statements */
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import reportWebVitals from './reportWebVitals';
 
 import init from './init.jsx';

@@ -1,8 +1,9 @@
-/* eslint functional/no-return-void: "error" */
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import routes from '../routes.js';
 import { useFormik } from 'formik';
+import * as Yup from 'yup';
+
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
@@ -12,28 +13,49 @@ import Form from 'react-bootstrap/Form';
 import Image from 'react-bootstrap/Image';
 import Row from 'react-bootstrap/Row';
 
-import * as Yup from 'yup';
+import axios from 'axios';
+import { useAuth } from '../hooks/index.jsx';
 
-const SignupSchema =  Yup.object().shape({
+const signupSchema =  Yup.object().shape({
   username: Yup.string().trim()
-    .min(4, 'Минимум 4 буквы')
+    .min(3, 'Минимум 3 буквы')
     .max(25, 'Максимум 25 букв')
     .required('Обязательное поле'),
-    password: Yup.string().trim().required('Обязательное поле'),
+    password: Yup.string().trim()
+    .min(3, 'Минимум 3 знака')
+    .max(30, 'Максимум 30 знаков')
+    .required('Обязательное поле')
 });
 
 const LoginPage  = () => {
+  const [authFailed, setAuthFailed] = useState(false);
+  const auth = useAuth();
+  const navigate = useNavigate();
+  const inputRef = useRef();
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
   const formik = useFormik({
     initialValues: {
       username: '',
       password: '',
     },
-    validationSchema: SignupSchema,
-    onSubmit: (values, { setSubmitting }) => {
-      setTimeout(() => {
-        alert(JSON.stringify(values, null, 2));
-        setSubmitting(false);
-    }, 400)},
+    validationSchema: signupSchema,
+    onSubmit: async ({ username, password }) => {
+      setAuthFailed(false);
+      try {
+        const res = await axios.post(routes.loginApiPath(), { username, password });
+        auth.logIn(res.data);
+        navigate(routes.chatPagePath());
+      } catch (err) {
+        formik.setSubmitting(false);
+        if (err.isAxiosError && err.response?.status === 401) {
+          setAuthFailed(true);
+          inputRef.current.select();
+        };
+      }
+    }
   });
 
   return (
@@ -49,7 +71,7 @@ const LoginPage  = () => {
                 <Col className="mt-3 mt-mb-0">
                   <Form onSubmit={formik.handleSubmit}>
                     <h1 className="text-center mb-4">Войти</h1>
-                      <fieldset>
+                      <fieldset disabled={formik.isSubmitting}>
                         <Form.Group controlId="username" className="form-floating mb-3">
                           <FloatingLabel controlId="username" label="Ваш ник" className="">
                             <Form.Control
@@ -59,11 +81,10 @@ const LoginPage  = () => {
                               onChange={formik.handleChange}
                               onBlur={formik.handleBlur}
                               value={formik.values.username}
-                              isInvalid={formik.touched.username && formik.errors.username}
+                              isInvalid={authFailed}
+                              ref={inputRef}
+                              required
                             />
-                            <Form.Control.Feedback type="invalid" tooltip>
-                              {formik.errors.username}
-                            </Form.Control.Feedback>
                           </FloatingLabel>
                         </Form.Group>
                         <Form.Group controlId="password" className="form-floating mb-4">
@@ -76,10 +97,11 @@ const LoginPage  = () => {
                               onChange={formik.handleChange}
                               onBlur={formik.handleBlur}
                               value={formik.values.password}
-                              isInvalid={formik.touched.password && formik.errors.password}
+                              isInvalid={authFailed}
+                              required
                             />
                             <Form.Control.Feedback type="invalid" tooltip>
-                              {formik.errors.password}
+                              Неверный логин и пароль
                             </Form.Control.Feedback>
                           </FloatingLabel>
                         </Form.Group>
