@@ -8,8 +8,7 @@
 
 Commands for [onrender](https://onrender.com/)
 
-╔═════════════════════════════════╗
-║ build │ npm ci && npm run build ║
-║─────────────────────────────────║
-║ start │ npm run star            ║
-╚═════════════════════════════════╝
+ build │ npm ci && npm run build
+
+ start │ npm run star
+
