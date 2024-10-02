@@ -22,8 +22,7 @@ const signupSchema =  Yup.object().shape({
     .max(25, 'Максимум 25 букв')
     .required('Обязательное поле'),
     password: Yup.string().trim()
-    .min(3, 'Минимум 3 знака')
-    .max(30, 'Максимум 30 знаков')
+    .min(6, 'Минимум 6 знаков')
     .required('Обязательное поле')
 });
 
@@ -75,6 +74,7 @@ const LoginPage  = () => {
                         <Form.Group controlId="username" className="form-floating mb-3">
                           <FloatingLabel controlId="username" label="Ваш ник" className="">
                             <Form.Control
+                              type="text"
                               name="username"
                               placeholder="Ваш ник"
                               autoComplete="username"
