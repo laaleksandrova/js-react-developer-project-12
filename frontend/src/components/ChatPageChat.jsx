@@ -1,3 +1,4 @@
+/* eslint-disable functional/no-expression-statements */
 import { Col, Form, Button } from 'react-bootstrap';
 import { ArrowRightSquare } from 'react-bootstrap-icons';
 import React, { useRef, useEffect } from 'react';

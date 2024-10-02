@@ -1,3 +1,4 @@
+/* eslint-disable functional/no-expression-statements */
 import React, { useState } from 'react';
 import { AuthContext } from './index.jsx';
 

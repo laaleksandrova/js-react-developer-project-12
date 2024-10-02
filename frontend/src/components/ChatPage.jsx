@@ -1,9 +1,10 @@
+/* eslint-disable functional/no-expression-statements */
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   Container,
   Row,
-  Spinner ,
+  Spinner,
 } from 'react-bootstrap';
 import fetchData from '../slices/fetchData.js';
 import { useAuth } from '../hooks/index.jsx';
@@ -25,17 +26,17 @@ const ChatPage = () => {
       try {
         await dispatch(fetchData(token));
       } catch (error) {
-        /* eslint-disable-next-line */
         if (error.message === 'Request failed with status code 500' || error.message === 'Request failed with status code 401') {
           auth.logOut();
+          return;
         }
+        throw error;
       }
     };
 
     requestData();
     setLoaded(true);
-  }, [isLoaded, dispatch, auth]);
-
+  }, [isLoaded, dispatch, auth, token]);
 
   return isLoaded ? (
     <Container className="h-100 my-4 overflow-hidden rounded shadow">
